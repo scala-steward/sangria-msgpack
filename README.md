@@ -8,6 +8,20 @@ SBT Configuration:
 libraryDependencies += "org.sangria-graphql" %% "sangria-msgpack" % "0.1.0"
 ```
 
+## BigDecimal handling
+
+MessagePack does not support `BigDecimal` natively. However it supports [extension types](https://github.com/msgpack/msgpack/blob/master/spec.md#types-extension-type). 
+ 
+In order to provide `BigDecimal` support, sangria-msgpack implements an extension type with type ID `47`. It packs the scale in the first 4 bytes (int) followed by unscaled big integers value. This is the default behaviour, so you don't need any addition import for it.
+
+If you would like to allow sangria-msgpack to pack `BigDecimal` values as standard types (big integer and double), then you need to add following import:
+ 
+```scala
+import sangria.marshalling.msgpack.standardTypeBigDecimal._
+```
+
+Please use it with caution because it will throw `IllegalArgumentException` if number does not fit in big integer or double.
+
 ## License
 
 **sangria-msgpack** is licensed under [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
