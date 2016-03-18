@@ -8,7 +8,7 @@ import sangria.marshalling.testkit._
 class MsgpackSupportSpec extends WordSpec with Matchers with MarshallingBehaviour with InputHandlingBehaviour with ParsingBehaviour {
   import sangria.marshalling.msgpack._
 
-  "Circe integration" should {
+  "Msgpack integration" should {
     behave like `value (un)marshaller` (msgpackResultMarshaller)
 
     behave like `AST-based input unmarshaller` (msgpackFromInput)
