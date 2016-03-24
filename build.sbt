@@ -1,6 +1,6 @@
 name := "sangria-msgpack"
 organization := "org.sangria-graphql"
-version := "0.2.0"
+version := "0.2.1-SNAPSHOT"
 
 description := "Sangria MessagePack marshalling"
 homepage := Some(url("http://sangria-graphql.org"))
