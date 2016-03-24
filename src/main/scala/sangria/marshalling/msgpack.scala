@@ -11,8 +11,14 @@ import scala.util.Try
 object msgpack {
   class MsgpackResultMarshaller(bigDecimalMarshaller: MsgpackBigDecimalMarshaller) extends ResultMarshaller {
     type Node = Value
+    override type MapBuilder = MsgpackMapBuilder
 
-    def emptyMapNode = ValueFactory.emptyMap()
+    def emptyMapNode(keys: Seq[String]) = new MsgpackMapBuilder(keys)
+
+    def addMapNodeElem(builder: MapBuilder, key: String, value: Value, optional: Boolean) =
+      builder.add(key, value)
+
+    def mapNode(builder: MapBuilder) = builder.build
 
     def mapNode(keyValues: Seq[(String, Value)]) = keyValues.foldLeft(ValueFactory.newMapBuilder()) {
       case (acc, (key, value)) ⇒ acc.put(ValueFactory.newString(key), value)
@@ -20,8 +26,6 @@ object msgpack {
 
     def addMapNodeElem(node: Value, key: String, value: Value, optional: Boolean) =
       ValueFactory.newMap(node.asInstanceOf[MapValue].getKeyValueArray ++ Array(ValueFactory.newString(key), value), true)
-
-
 
     def arrayNode(values: Vector[Value]) = ValueFactory.newArray(values.toArray, true)
     def optionalArrayNodeValue(value: Option[Value]) = value match {
@@ -203,6 +207,47 @@ object msgpack {
       val unpacker = MessagePack.newDefaultUnpacker(bytes)
 
       unpacker.unpackValue()
+    }
+  }
+
+  private[msgpack] final class MsgpackMapBuilder(keys: Seq[String]) {
+    import scala.collection.mutable.{Set ⇒ MutableSet}
+
+    private val elements = new Array[Value](keys.size * 2)
+    private val indexesSet = MutableSet[Int]()
+    private val indexLookup = {
+      val builder = Map.newBuilder[String, Int]
+      var idx = 0
+
+      keys.foreach { key ⇒
+        builder += key → idx
+        idx += 2
+      }
+
+      builder.result()
+    }
+
+    def add(key: String, elem: Value) = {
+      val idx = indexLookup(key)
+
+      elements(idx) = ValueFactory.newString(key)
+      elements(idx + 1) = elem
+      indexesSet += idx
+
+      this
+    }
+
+    def build = {
+      val buffer = new Array[Value](indexesSet.size * 2)
+      var bufferIdx = 0
+
+      for (i ← 0 to (keys.size * 2) by 2 if indexesSet contains i) {
+        buffer(bufferIdx) = elements(i)
+        buffer(bufferIdx + 1) = elements(i + 1)
+        bufferIdx = bufferIdx + 2
+      }
+
+      ValueFactory.newMap(buffer, true)
     }
   }
 }
