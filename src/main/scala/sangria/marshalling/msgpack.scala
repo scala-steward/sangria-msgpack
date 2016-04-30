@@ -24,9 +24,6 @@ object msgpack {
       case (acc, (key, value)) ⇒ acc.put(ValueFactory.newString(key), value)
     }.build()
 
-    def addMapNodeElem(node: Value, key: String, value: Value, optional: Boolean) =
-      ValueFactory.newMap(node.asInstanceOf[MapValue].getKeyValueArray ++ Array(ValueFactory.newString(key), value), true)
-
     def arrayNode(values: Vector[Value]) = ValueFactory.newArray(values.toArray, true)
     def optionalArrayNodeValue(value: Option[Value]) = value match {
       case Some(v) ⇒ v
