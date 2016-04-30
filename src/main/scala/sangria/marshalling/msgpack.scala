@@ -201,7 +201,7 @@ object msgpack {
     javax.xml.bind.DatatypeConverter.printBase64Binary(bytes)
   }
 
-  implicit object PlayJsonInputParser extends InputParser[Value] {
+  implicit object MsgpackInputParser extends InputParser[Value] {
     def parse(str: String) = Try {
       val bytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(str)
       val unpacker = MessagePack.newDefaultUnpacker(bytes)
