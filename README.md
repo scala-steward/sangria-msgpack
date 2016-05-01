@@ -5,7 +5,7 @@
 SBT Configuration:
 
 ```scala
-libraryDependencies += "org.sangria-graphql" %% "sangria-msgpack" % "0.2.0"
+libraryDependencies += "org.sangria-graphql" %% "sangria-msgpack" % "0.2.1"
 ```
 
 ## BigDecimal handling

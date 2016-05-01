@@ -1,6 +1,6 @@
 name := "sangria-msgpack"
 organization := "org.sangria-graphql"
-version := "0.2.1-SNAPSHOT"
+version := "0.2.1"
 
 description := "Sangria MessagePack marshalling"
 homepage := Some(url("http://sangria-graphql.org"))
@@ -10,11 +10,11 @@ scalaVersion := "2.11.8"
 scalacOptions ++= Seq("-deprecation", "-feature")
 
 libraryDependencies ++= Seq(
-  "org.sangria-graphql" %% "sangria-marshalling-api" % "0.2.0",
+  "org.sangria-graphql" %% "sangria-marshalling-api" % "0.2.1",
 
   "org.msgpack" % "msgpack-core" % "0.8.3",
 
-  "org.sangria-graphql" %% "sangria-marshalling-testkit" % "0.2.0" % "test",
+  "org.sangria-graphql" %% "sangria-marshalling-testkit" % "0.2.1" % "test",
   "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 )
 

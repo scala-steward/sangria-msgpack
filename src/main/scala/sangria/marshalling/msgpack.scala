@@ -30,12 +30,19 @@ object msgpack {
       case None ⇒ nullNode
     }
 
-    def booleanNode(value: Boolean) = ValueFactory.newBoolean(value)
-    def floatNode(value: Double) = ValueFactory.newFloat(value)
-    def stringNode(value: String) = ValueFactory.newString(value)
-    def intNode(value: Int) = ValueFactory.newInteger(value)
-    def bigIntNode(value: BigInt) = ValueFactory.newInteger(value.bigInteger)
-    def bigDecimalNode(value: BigDecimal) = bigDecimalMarshaller.marshalBigDecimal(value)
+    def scalarNode(value: Any, typeName: String, info: Set[ScalarValueInfo]) = value match {
+      case v: String ⇒ ValueFactory.newString(v)
+      case v: Boolean ⇒ ValueFactory.newBoolean(v)
+      case v: Int ⇒ ValueFactory.newInteger(v)
+      case v: Long ⇒ ValueFactory.newInteger(v)
+      case v: Float ⇒ ValueFactory.newFloat(v)
+      case v: Double ⇒ ValueFactory.newFloat(v)
+      case v: BigInt ⇒ ValueFactory.newInteger(v.bigInteger)
+      case v: BigDecimal ⇒ bigDecimalMarshaller.marshalBigDecimal(v)
+      case v ⇒ throw new IllegalArgumentException("Unsupported scalar value: " + v)
+    }
+
+    def enumNode(value: String, typeName: String) = ValueFactory.newString(value)
 
     def nullNode = ValueFactory.newNil()
 
