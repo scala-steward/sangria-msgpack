@@ -1,3 +1,7 @@
+## Upcoming
+
+* Added `BlobSupport` capability to `ResultMarshaller`
+
 ## v0.2.1 (2016-05-01)
 
 * Updated to sangria-marshalling-api v0.2.1

@@ -39,6 +39,7 @@ object msgpack {
       case v: Double ⇒ ValueFactory.newFloat(v)
       case v: BigInt ⇒ ValueFactory.newInteger(v.bigInteger)
       case v: BigDecimal ⇒ bigDecimalMarshaller.marshalBigDecimal(v)
+      case v: Array[Byte] ⇒ ValueFactory.newBinary(v)
       case v ⇒ throw new IllegalArgumentException("Unsupported scalar value: " + v)
     }
 
@@ -48,6 +49,8 @@ object msgpack {
 
     def renderPretty(node: Value) = renderCompact(node)
     def renderCompact(node: Value) = render(node)
+
+    override def capabilities = Set(BlobSupport)
   }
 
   implicit def msgpackResultMarshaller(implicit bigDecimalMarshaller: MsgpackBigDecimalMarshaller) =
