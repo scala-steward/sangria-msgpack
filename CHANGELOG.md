@@ -1,6 +1,8 @@
-## Upcoming
+## v0.2.2 (2016-11-03)
 
 * Added `BlobSupport` capability to `ResultMarshaller`
+* Cross-compile for scala 2.11 and 2.12
+* Updated dependencies
 
 ## v0.2.1 (2016-05-01)
 
