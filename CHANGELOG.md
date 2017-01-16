@@ -1,3 +1,8 @@
+## v1.0.0 (2017-01-16)
+
+* 1.0 Release
+* updated `msgpack-core` to v0.8.11 
+
 ## v0.2.2 (2016-11-03)
 
 * Added `BlobSupport` capability to `ResultMarshaller`
