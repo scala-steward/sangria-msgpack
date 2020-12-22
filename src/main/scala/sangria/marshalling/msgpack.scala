@@ -9,7 +9,8 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 
 object msgpack {
-  class MsgpackResultMarshaller(bigDecimalMarshaller: MsgpackBigDecimalMarshaller) extends ResultMarshaller {
+  class MsgpackResultMarshaller(bigDecimalMarshaller: MsgpackBigDecimalMarshaller)
+      extends ResultMarshaller {
     type Node = Value
     override type MapBuilder = MsgpackMapBuilder
 
@@ -20,9 +21,11 @@ object msgpack {
 
     def mapNode(builder: MapBuilder) = builder.build
 
-    def mapNode(keyValues: Seq[(String, Value)]) = keyValues.foldLeft(ValueFactory.newMapBuilder()) {
-      case (acc, (key, value)) => acc.put(ValueFactory.newString(key), value)
-    }.build()
+    def mapNode(keyValues: Seq[(String, Value)]) = keyValues
+      .foldLeft(ValueFactory.newMapBuilder()) { case (acc, (key, value)) =>
+        acc.put(ValueFactory.newString(key), value)
+      }
+      .build()
 
     def arrayNode(values: Vector[Value]) = ValueFactory.newArray(values.toArray, true)
     def optionalArrayNodeValue(value: Option[Value]) = value match {
@@ -56,25 +59,32 @@ object msgpack {
   implicit def msgpackResultMarshaller(implicit bigDecimalMarshaller: MsgpackBigDecimalMarshaller) =
     new MsgpackResultMarshaller(bigDecimalMarshaller)
 
-  class MsgpackMarshallerForType(bigDecimalMarshaller: MsgpackBigDecimalMarshaller) extends ResultMarshallerForType[Value] {
+  class MsgpackMarshallerForType(bigDecimalMarshaller: MsgpackBigDecimalMarshaller)
+      extends ResultMarshallerForType[Value] {
     val marshaller = new MsgpackResultMarshaller(bigDecimalMarshaller)
   }
 
-  implicit def msgpackMarshallerForType(implicit bigDecimalMarshaller: MsgpackBigDecimalMarshaller) =
+  implicit def msgpackMarshallerForType(implicit
+      bigDecimalMarshaller: MsgpackBigDecimalMarshaller) =
     new MsgpackMarshallerForType(bigDecimalMarshaller)
 
-  class MsgpackInputUnmarshaller(bigDecimalMarshaller: MsgpackBigDecimalMarshaller) extends InputUnmarshaller[Value] {
-    def getRootMapValue(node: Value, key: String) = Option(node.asInstanceOf[MapValue].map().get(ValueFactory.newString(key)))
+  class MsgpackInputUnmarshaller(bigDecimalMarshaller: MsgpackBigDecimalMarshaller)
+      extends InputUnmarshaller[Value] {
+    def getRootMapValue(node: Value, key: String) = Option(
+      node.asInstanceOf[MapValue].map().get(ValueFactory.newString(key)))
 
     def isMapNode(node: Value) = node.isInstanceOf[MapValue]
     def getMapValue(node: Value, key: String) =
       Option(node.asInstanceOf[MapValue].map().get(ValueFactory.newString(key)))
 
     // preserve order
-    def getMapKeys(node: Value) = node.asInstanceOf[MapValue].getKeyValueArray.zipWithIndex.filter(_._2 % 2 == 0).map {
-      case (s: StringValue, _) => s.asString
-      case (invalid, _) => throw new IllegalArgumentException(s"Invalid map key type. Only Strings are supported. Key value: $invalid")
-    }
+    def getMapKeys(node: Value) =
+      node.asInstanceOf[MapValue].getKeyValueArray.zipWithIndex.filter(_._2 % 2 == 0).map {
+        case (s: StringValue, _) => s.asString
+        case (invalid, _) =>
+          throw new IllegalArgumentException(
+            s"Invalid map key type. Only Strings are supported. Key value: $invalid")
+      }
 
     def isListNode(node: Value) = node.isInstanceOf[ArrayValue]
     def getListValue(node: Value) = node.asInstanceOf[ArrayValue].list().asScala.toSeq
@@ -95,32 +105,34 @@ object msgpack {
 
     def getScalaScalarValue(node: Value) = getScalarValue(node)
 
-
     def isEnumNode(node: Value) = node.isInstanceOf[StringValue]
     def isScalarNode(node: Value) = node match {
       case value if bigDecimalMarshaller.isBigDecimal(value) => true
-      case _: StringValue | _: BooleanValue | _: IntegerValue | _ : FloatValue => true
+      case _: StringValue | _: BooleanValue | _: IntegerValue | _: FloatValue => true
       case _ => false
     }
 
     def isVariableNode(node: Value) = false
-    def getVariableName(node: Value) = throw new IllegalArgumentException("variables are not supported")
+    def getVariableName(node: Value) = throw new IllegalArgumentException(
+      "variables are not supported")
 
     def render(node: Value) = msgpack.render(node)
   }
 
-  implicit def msgpackInputUnmarshaller(implicit bigDecimalMarshaller: MsgpackBigDecimalMarshaller) =
+  implicit def msgpackInputUnmarshaller(implicit
+      bigDecimalMarshaller: MsgpackBigDecimalMarshaller) =
     new MsgpackInputUnmarshaller(bigDecimalMarshaller)
 
-
-  class MsgpackToInput(bigDecimalMarshaller: MsgpackBigDecimalMarshaller) extends ToInput[Value, Value] {
+  class MsgpackToInput(bigDecimalMarshaller: MsgpackBigDecimalMarshaller)
+      extends ToInput[Value, Value] {
     def toInput(value: Value) = (value, msgpackInputUnmarshaller(bigDecimalMarshaller))
   }
 
   implicit def msgpackToInput(implicit bigDecimalMarshaller: MsgpackBigDecimalMarshaller) =
     new MsgpackToInput(bigDecimalMarshaller)
 
-  class MsgpackFromInput(bigDecimalMarshaller: MsgpackBigDecimalMarshaller) extends FromInput[Value] {
+  class MsgpackFromInput(bigDecimalMarshaller: MsgpackBigDecimalMarshaller)
+      extends FromInput[Value] {
     val marshaller = msgpackResultMarshaller(bigDecimalMarshaller)
     def fromResult(node: marshaller.Node) = node
   }
@@ -162,7 +174,9 @@ object msgpack {
 
       def unmarshalBigDecimal(value: Value) = {
         val bytes = value.asInstanceOf[ExtensionValue].getData
-        val scale: Int = ((bytes(0): Int) << 24) + ((bytes(1): Int) << 16) + ((bytes(2): Int) << 8) + ((bytes(3): Int) << 0)
+        val scale: Int =
+          ((bytes(0): Int) << 24) + ((bytes(1): Int) << 16) + ((bytes(2): Int) << 8) + ((bytes(
+            3): Int) << 0)
         val vals: Array[Byte] = new Array[Byte](bytes.length - 4)
 
         System.arraycopy(bytes, 4, vals, 0, vals.length)
@@ -177,13 +191,13 @@ object msgpack {
   object standardTypeBigDecimal {
     implicit object DefaultMsgpackBigDecimalMarshaller extends MsgpackBigDecimalMarshaller {
       def marshalBigDecimal(value: BigDecimal) =
-        value.toBigIntExact map (i => ValueFactory.newInteger(i.bigInteger))getOrElse {
+        value.toBigIntExact.map(i => ValueFactory.newInteger(i.bigInteger)).getOrElse {
           if (value.isExactDouble)
             ValueFactory.newFloat(value.doubleValue)
           else
             throw new IllegalArgumentException(
               s"MessagePack cannot serialize a BigDecimal ($value) that can't be represented as double or a BigInt. " +
-              "Please use different `MsgpackBigDecimalMarshaller`. For example you can use the default one or define your own.")
+                "Please use different `MsgpackBigDecimalMarshaller`. For example you can use the default one or define your own.")
         }
 
       def isBigDecimal(value: Value) = false
@@ -193,8 +207,7 @@ object msgpack {
     }
   }
 
-  /**
-    * String rendering is a base64 binary value
+  /** String rendering is a base64 binary value
     */
   private def render(value: Value) = {
     val packer = MessagePack.newDefaultBufferPacker()
