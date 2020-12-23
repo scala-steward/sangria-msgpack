@@ -1,10 +1,10 @@
 package sangria.marshalling
 
 import java.math.BigInteger
-
 import org.msgpack.core.MessagePack
 import org.msgpack.value._
 
+import java.nio.charset.StandardCharsets
 import scala.collection.JavaConverters._
 import scala.util.Try
 
@@ -209,7 +209,7 @@ object msgpack {
 
   /** String rendering is a base64 binary value
     */
-  private def render(value: Value) = {
+  private def render(value: Value): String = {
     val packer = MessagePack.newDefaultBufferPacker()
 
     packer.packValue(value)
@@ -217,13 +217,12 @@ object msgpack {
 
     val bytes = packer.toByteArray
 
-    // :( Java 7 compatibility and ideally no deps
-    javax.xml.bind.DatatypeConverter.printBase64Binary(bytes)
+    new String(java.util.Base64.getEncoder.encode(bytes), StandardCharsets.UTF_8)
   }
 
   implicit object MsgpackInputParser extends InputParser[Value] {
     def parse(str: String) = Try {
-      val bytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(str)
+      val bytes = java.util.Base64.getDecoder.decode(str)
       val unpacker = MessagePack.newDefaultUnpacker(bytes)
 
       unpacker.unpackValue()
