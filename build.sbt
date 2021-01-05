@@ -19,7 +19,7 @@ scalacOptions += "-target:jvm-1.8"
 javacOptions ++= Seq("-source", "8", "-target", "8")
 
 libraryDependencies ++= Seq(
-  "org.sangria-graphql" %% "sangria-marshalling-api" % "1.0.4",
+  "org.sangria-graphql" %% "sangria-marshalling-api" % "1.0.5",
 
   "org.msgpack" % "msgpack-core" % "0.8.22",
 
