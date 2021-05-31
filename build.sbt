@@ -23,7 +23,7 @@ libraryDependencies ++= Seq(
 
   "org.msgpack" % "msgpack-core" % "0.8.24",
 
-  "org.sangria-graphql" %% "sangria-marshalling-testkit" % "1.0.3" % Test,
+  "org.sangria-graphql" %% "sangria-marshalling-testkit" % "1.0.4" % Test,
   "org.scalatest" %% "scalatest" % "3.2.9" % Test
 )
 
