@@ -1,7 +1,6 @@
 package sangria.marshalling
 
-import org.msgpack.value.ValueFactory
-
+import org.msgpack.value.{ImmutableMapValue, ValueFactory}
 import sangria.marshalling.testkit._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -31,7 +30,7 @@ class MsgpackSupportSpec
       )))
   }
 
-  val toRender = ValueFactory.newMap(
+  val toRender: ImmutableMapValue = ValueFactory.newMap(
     ValueFactory.newString("a"),
     ValueFactory.newArray(
       ValueFactory.newNil(),
