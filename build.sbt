@@ -16,7 +16,7 @@ licenses := Seq(
   "Apache License, ASL Version 2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0"))
 
 // sbt-github-actions needs configuration in `ThisBuild`
-ThisBuild / crossScalaVersions := Seq("2.12.20", "2.13.15", "3.6.3")
+ThisBuild / crossScalaVersions := Seq("2.12.20", "2.13.16", "3.6.3")
 ThisBuild / scalaVersion := crossScalaVersions.value.last
 ThisBuild / githubWorkflowPublishTargetBranches := List()
 ThisBuild / githubWorkflowBuildPreamble ++= List(
@@ -34,7 +34,7 @@ javacOptions ++= Seq("-source", "8", "-target", "8")
 
 libraryDependencies ++= Seq(
   "org.sangria-graphql" %% "sangria-marshalling-api" % "1.1.3",
-  "org.msgpack" % "msgpack-core" % "0.9.8",
+  "org.msgpack" % "msgpack-core" % "0.9.9",
   "org.sangria-graphql" %% "sangria-marshalling-testkit" % "1.0.4" % Test,
   "org.scalatest" %% "scalatest" % "3.2.19" % Test
 )
